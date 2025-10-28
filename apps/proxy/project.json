@@ -1,0 +1,29 @@
+{
+  "name": "proxy",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["apps/*"],
+  "targets": {
+    "serve": {
+      "command": "caddy run --config apps/proxy/Caddyfile --adapter caddyfile",
+      "dependsOn": ["^serve", "^dev"],
+      "continuous": true
+    },
+    "serve:ngrok": {
+      "command": "caddy run --config apps/proxy/Caddyfile.tunnel --adapter caddyfile",
+      "dependsOn": ["^serve", "^dev"],
+      "continuous": true
+    },
+    "configurations": {
+      "production": {
+        "commands": [
+          {
+            "command": "echo 'Production mode: Use Docker or standalone deployment'",
+            "description": "Production deployment info"
+          }
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+# Caddy reverse proxy configuration for local development
+# Handles HTTPS, SSL certificates, and routing between services
+#
+# Start with: caddy run
+# Or use Nx: npx nx serve dev
+
+# Main application on localhost
+localhost:3000 {
+	# Automatic HTTPS with locally-trusted certificates
+	# Caddy will automatically generate and trust certificates using its local CA
+
+	# API routes - proxy to Express backend
+	handle /api/* {
+		reverse_proxy localhost:3001
+	}
+
+	# Auth routes (OAuth) - proxy to Express backend
+	handle /auth/* {
+		reverse_proxy localhost:3001
+	}
+
+	# Slack webhook routes - proxy to Express backend
+	handle /slack/* {
+		reverse_proxy localhost:3001
+	}
+
+	# Admin interface - proxy to Vite dev server
+	# handle_path automatically strips the matched prefix
+	handle /admin/* {
+		reverse_proxy localhost:4200 {
+			# Enable WebSocket support for Vite HMR
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			# Preserve original host for proper routing
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /admin {
+		reverse_proxy localhost:4200 {
+			# Enable WebSocket support for Vite HMR
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			# Preserve original host for proper routing
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /user/* {
+		reverse_proxy localhost:4201 {
+			# Enable WebSocket support for Vite HMR
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			# Preserve original host for proper routing
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /user {
+		reverse_proxy localhost:4201 {
+			# Enable WebSocket support for Vite HMR
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			# Preserve original host for proper routing
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# Root endpoint - proxy to Express backend
+	handle / {
+		reverse_proxy localhost:3001
+	}
+
+	# Enable access logs for debugging
+	log {
+		output stdout
+		format console
+	}
+}
