@@ -1,0 +1,8 @@
+{
+  "name": "@slack-linear-rundown/admin",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@slack-linear-rundown/auth-client": "workspace:*"
+  }
+}
