@@ -7,6 +7,7 @@ out-tsc
 
 # dependencies
 node_modules
+.pnpm-store
 
 # IDEs and editors
 /.idea
@@ -42,3 +43,23 @@ Thumbs.db
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+test-output
+.env*
+!.env.example
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+
+# Local database files
+/data
+# Build outputs of frontend app.
+/apps/api/public
+
+# SSL certificates (for local development)
+/certs
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# API schemas (downloaded for reference)
+linear-schema.graphql
