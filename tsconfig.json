@@ -2,5 +2,30 @@
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./libs/database"
+    },
+    {
+      "path": "./libs/linear"
+    },
+    {
+      "path": "./libs/slack"
+    },
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./apps/admin"
+    },
+    {
+      "path": "./apps/user"
+    },
+    {
+      "path": "./libs/auth"
+    },
+    {
+      "path": "./libs/auth-client"
+    }
+  ]
 }
