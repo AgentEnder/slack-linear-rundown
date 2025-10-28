@@ -1,0 +1,11 @@
+{
+  "name": "@slack-linear-rundown/user",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "user"
+  },
+  "dependencies": {
+    "@slack-linear-rundown/auth-client": "workspace:*"
+  }
+}
