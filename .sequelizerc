@@ -1,0 +1,8 @@
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('libs/database/src/config', 'database.js'),
+  'models-path': path.resolve('libs/database/src/lib/models'),
+  'seeders-path': path.resolve('libs/database/src/seeders'),
+  'migrations-path': path.resolve('libs/database/src/migrations-sequelize'),
+};

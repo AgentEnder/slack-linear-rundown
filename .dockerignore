@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+.nx/
+tmp/
+out-tsc/
+
+# Testing
+coverage/
+*.spec.ts
+*.test.ts
+__tests__/
+test/
+tests/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation (exclude most, keep essential ones if needed)
+*.md
+!README.md
+docs/
+plans/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Logs
+logs/
+*.log
+
+# Miscellaneous
+.cache/
+.temp/
+.tmp/
+*.bak
+*.orig
