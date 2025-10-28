@@ -1,0 +1,71 @@
+{
+  "name": "@slack-linear-rundown/api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "apps/api/dist",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/api/src/main.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "declaration": false,
+        "assets": [
+          "apps/api/src/assets",
+          {
+            "input": "apps/admin/dist",
+            "glob": "**/*",
+            "output": "app/public",
+            "includeIgnoredFiles": true
+          },
+          {
+            "input": "apps/user/dist",
+            "glob": "**/*",
+            "output": "app/public-user",
+            "includeIgnoredFiles": true
+          }
+        ],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": { ".js": ".js" }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": { ".js": ".js" }
+          }
+        }
+      },
+      "dependsOn": ["^build"]
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "continuous": true,
+      "options": {
+        "buildTarget": "@slack-linear-rundown/api:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "@slack-linear-rundown/api:build:development"
+        },
+        "production": {
+          "buildTarget": "@slack-linear-rundown/api:build:production"
+        }
+      }
+    }
+  },
+  "tags": ["type:app", "scope:backend"],
+  "implicitDependencies": ["admin", "user"]
+}

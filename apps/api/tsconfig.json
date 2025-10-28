@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../libs/auth"
+    },
+    {
+      "path": "../../libs/slack"
+    },
+    {
+      "path": "../../libs/linear"
+    },
+    {
+      "path": "../../libs/database"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
+}

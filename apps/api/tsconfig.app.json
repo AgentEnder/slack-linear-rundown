@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["../admin/**/*", "../../apps/admin/**/*", "node_modules"],
+  "references": [
+    {
+      "path": "../../libs/auth/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/slack/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/linear/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/database/tsconfig.lib.json"
+    }
+  ]
+}

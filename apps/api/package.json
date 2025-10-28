@@ -1,0 +1,14 @@
+{
+  "name": "@slack-linear-rundown/api",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@slack-linear-rundown/auth": "workspace:*",
+    "@slack-linear-rundown/database": "workspace:*",
+    "@slack-linear-rundown/linear": "workspace:*",
+    "@slack-linear-rundown/slack": "workspace:*",
+    "@types/cors": "^2.8.19",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
