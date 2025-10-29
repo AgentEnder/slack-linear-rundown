@@ -12,3 +12,4 @@ export { adminRouter } from './admin.routes.js';
 export { jobsRouter } from './jobs.routes.js';
 export { userRouter } from './user.routes.js';
 export { authRouter } from './auth.routes.js';
+export { default as syncRouter } from './sync.routes.js';
