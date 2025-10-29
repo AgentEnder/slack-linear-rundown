@@ -1,5 +1,5 @@
 {
-  "name": "@slack-linear-rundown/api",
+  "name": "api",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api/src",
   "projectType": "application",
@@ -53,15 +53,15 @@
       "dependsOn": ["build"],
       "continuous": true,
       "options": {
-        "buildTarget": "@slack-linear-rundown/api:build",
+        "buildTarget": "api:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "@slack-linear-rundown/api:build:development"
+          "buildTarget": "api:build:development"
         },
         "production": {
-          "buildTarget": "@slack-linear-rundown/api:build:production"
+          "buildTarget": "api:build:production"
         }
       }
     }

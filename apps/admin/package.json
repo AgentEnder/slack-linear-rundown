@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@slack-linear-rundown/auth-client": "workspace:*"
+    "@slack-linear-rundown/auth-client": "workspace:*",
+    "@slack-linear-rundown/icons": "workspace:*",
+    "@slack-linear-rundown/shared-types": "workspace:*",
+    "@slack-linear-rundown/ui-components": "workspace:*",
+    "@slack-linear-rundown/utils": "workspace:*"
   }
 }

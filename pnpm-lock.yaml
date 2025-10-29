@@ -203,6 +203,18 @@ importers:
       '@slack-linear-rundown/auth-client':
         specifier: workspace:*
         version: link:../../libs/auth-client
+      '@slack-linear-rundown/icons':
+        specifier: workspace:*
+        version: link:../../libs/icons
+      '@slack-linear-rundown/shared-types':
+        specifier: workspace:*
+        version: link:../../libs/shared-types
+      '@slack-linear-rundown/ui-components':
+        specifier: workspace:*
+        version: link:../../libs/ui-components
+      '@slack-linear-rundown/utils':
+        specifier: workspace:*
+        version: link:../../libs/utils
 
   apps/api:
     dependencies:
@@ -240,13 +252,19 @@ importers:
         specifier: ^2.3.0
         version: 2.8.1
 
-  libs/auth-client: {}
+  libs/auth-client:
+    dependencies:
+      '@slack-linear-rundown/icons':
+        specifier: workspace:*
+        version: link:../icons
 
   libs/database:
     dependencies:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+
+  libs/icons: {}
 
   libs/linear:
     dependencies:
@@ -260,11 +278,21 @@ importers:
         specifier: ^2.3.0
         version: 2.8.1
 
+  libs/shared-types: {}
+
   libs/slack:
     dependencies:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+
+  libs/ui-components:
+    dependencies:
+      '@slack-linear-rundown/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+
+  libs/utils: {}
 
 packages:
 
