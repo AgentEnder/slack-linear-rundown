@@ -131,6 +131,9 @@ router.get('/user/me', requireJWTAuth, async (req, res) => {
       name: user.slack_real_name || user.linear_name || user.email,
       linearUserId: user.linear_user_id,
       slackUserId: user.slack_user_id,
+      githubUsername: user.github_username,
+      githubConnected: !!user.github_connected_at,
+      githubConnectedAt: user.github_connected_at,
     });
   } catch (error) {
     logger.error('Failed to fetch current user', {
@@ -141,6 +144,80 @@ router.get('/user/me', requireJWTAuth, async (req, res) => {
     res.status(500).json({
       error: 'Internal Server Error',
       message: 'Failed to fetch user info.',
+    });
+  }
+});
+
+/**
+ * GET /api/user/github/status
+ * Check GitHub connection status for current user
+ */
+router.get('/user/github/status', requireJWTAuth, async (req, res) => {
+  try {
+    const user = req.user!;
+
+    const isConnected = !!user.github_connected_at;
+    const hasValidToken = user.github_access_token &&
+      (!user.github_token_expires_at || new Date() < user.github_token_expires_at);
+
+    res.json({
+      connected: isConnected,
+      username: user.github_username,
+      userId: user.github_user_id,
+      connectedAt: user.github_connected_at,
+      scopes: user.github_scopes?.split(' ') || [],
+      tokenValid: hasValidToken,
+      tokenExpiresAt: user.github_token_expires_at,
+    });
+  } catch (error) {
+    logger.error('Failed to fetch GitHub status', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userId: req.userId,
+    });
+
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to fetch GitHub status.',
+    });
+  }
+});
+
+/**
+ * POST /api/user/github/disconnect
+ * Disconnect GitHub account for current user
+ */
+router.post('/user/github/disconnect', requireJWTAuth, async (req, res) => {
+  try {
+    const user = req.user!;
+
+    // Clear all GitHub-related fields
+    user.github_access_token = null;
+    user.github_refresh_token = null;
+    user.github_token_expires_at = null;
+    user.github_connected_at = null;
+    user.github_scopes = null;
+    // Keep github_username and github_user_id for historical data
+
+    await user.save();
+
+    logger.info('GitHub account disconnected', {
+      userId: user.id,
+      githubUsername: user.github_username,
+    });
+
+    res.json({
+      success: true,
+      message: 'GitHub account disconnected successfully',
+    });
+  } catch (error) {
+    logger.error('Failed to disconnect GitHub', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      userId: req.userId,
+    });
+
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to disconnect GitHub account.',
     });
   }
 });

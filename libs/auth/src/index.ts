@@ -14,7 +14,7 @@ export {
   type TokenPair,
 } from './lib/jwt.js';
 
-// OAuth utilities
+// OAuth utilities (Slack)
 export {
   generateSecureRandom,
   generateOAuthState,
@@ -27,3 +27,21 @@ export {
   type OAuthState,
   type SlackIdToken,
 } from './lib/oauth.js';
+
+// OAuth utilities (GitHub)
+export {
+  generateGitHubOAuthState,
+  buildGitHubAuthorizationUrl,
+  exchangeGitHubCodeForToken,
+  fetchGitHubUserInfo,
+  refreshGitHubToken,
+  isGitHubTokenExpired,
+  type GitHubOAuthConfig,
+  type GitHubOAuthState,
+} from './lib/github-oauth.js';
+
+// Encryption utilities
+export {
+  encrypt,
+  decrypt,
+} from './lib/encryption.js';

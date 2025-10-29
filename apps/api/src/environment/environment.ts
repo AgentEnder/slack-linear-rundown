@@ -30,6 +30,14 @@ const EnvironmentSchema = z.object({
 
   // Optional - used for admin config encryption
   ENCRYPTION_KEY: z.string().optional(),
+
+  // Optional - GitHub App OAuth (for user-specific GitHub connections)
+  GITHUB_APP_CLIENT_ID: z.string().optional(),
+  GITHUB_APP_CLIENT_SECRET: z.string().optional(),
+  GITHUB_OAUTH_REDIRECT_URI: z.string().optional(), // Falls back to API_URL/auth/github/callback
+
+  // Optional - Shared GitHub token (fallback if user hasn't connected GitHub)
+  GITHUB_TOKEN: z.string().optional(),
 });
 
 type Environment = z.infer<typeof EnvironmentSchema>;
