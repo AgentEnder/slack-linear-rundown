@@ -466,13 +466,30 @@ adminRouter.get(
 
       const deliveries = await ReportDeliveryLog.findAll({
         where,
+        include: [
+          {
+            model: User,
+            attributes: ['email', 'slack_real_name', 'linear_name'],
+          },
+        ],
         order: [['sent_at', 'DESC']],
         limit: 1000,
       });
 
+      // Transform deliveries to flatten user data for easier frontend consumption
+      const deliveriesWithUserData = deliveries.map((d) => {
+        const delivery = d.toJSON() as any;
+        if (delivery.user) {
+          delivery.user_email = delivery.user.email;
+          delivery.user_name = delivery.user.slack_real_name || delivery.user.linear_name;
+          delete delivery.user;
+        }
+        return delivery;
+      });
+
       res.status(200).json({
         success: true,
-        deliveries: deliveries.map((d) => d.toJSON()),
+        deliveries: deliveriesWithUserData,
         count: deliveries.length,
       });
     } catch (error) {
