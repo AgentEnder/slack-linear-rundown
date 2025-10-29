@@ -12,6 +12,9 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
+  "sync": {
+    "applyChanges": true
+  },
   "nxCloudUrl": "https://staging.nx.app",
   "nxCloudId": "68ff911c43310010f30c420c",
   "plugins": [
@@ -27,7 +30,8 @@
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
-      }
+      },
+      "exclude": ["libs/shared-types/*", "libs/utils/*"]
     },
     {
       "plugin": "@nx/jest/plugin",
@@ -47,6 +51,15 @@
         "typecheckTargetName": "typecheck",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "include": ["libs/shared-types/*", "libs/utils/*"],
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        }
       }
     }
   ],

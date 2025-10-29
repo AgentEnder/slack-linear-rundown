@@ -26,6 +26,18 @@
     },
     {
       "path": "./libs/auth-client"
+    },
+    {
+      "path": "./libs/shared-types"
+    },
+    {
+      "path": "./libs/ui-components"
+    },
+    {
+      "path": "./libs/utils"
+    },
+    {
+      "path": "./libs/icons"
     }
   ]
 }

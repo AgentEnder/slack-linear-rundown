@@ -1,0 +1,38 @@
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.warning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.disabled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.inactive {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
