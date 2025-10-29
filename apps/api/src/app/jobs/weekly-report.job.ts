@@ -32,12 +32,17 @@ interface DeliverySummary {
  * @param slackClient - Initialized Slack client
  * @param linearClient - Initialized Linear client
  * @param schedule - Cron expression for schedule (default: '0 9 * * 1' - Monday 9AM)
+ * @param options - Optional configuration (encryptionKey, sharedGitHubToken)
  * @returns cron.ScheduledTask - The scheduled task (can be stopped with task.stop())
  */
 export function initWeeklyReportJob(
   slackClient: SlackClient,
   linearClient: LinearClient,
-  schedule: string = '0 9 * * 1'
+  schedule: string = '0 9 * * 1',
+  options?: {
+    encryptionKey?: string;
+    sharedGitHubToken?: string;
+  }
 ): cron.ScheduledTask {
   logger.info('Initializing weekly report job', { schedule });
 
@@ -51,7 +56,7 @@ export function initWeeklyReportJob(
   const task = cron.schedule(
     schedule,
     async () => {
-      await runWeeklyReport(slackClient, linearClient);
+      await runWeeklyReport(slackClient, linearClient, options);
     }
   );
 
@@ -69,10 +74,15 @@ export function initWeeklyReportJob(
  *
  * @param slackClient - Initialized Slack client
  * @param linearClient - Initialized Linear client
+ * @param options - Optional configuration (encryptionKey, sharedGitHubToken)
  */
 export async function runWeeklyReport(
   slackClient: SlackClient,
-  linearClient: LinearClient
+  linearClient: LinearClient,
+  options?: {
+    encryptionKey?: string;
+    sharedGitHubToken?: string;
+  }
 ): Promise<DeliverySummary> {
   const startTime = new Date();
   logger.info('Starting weekly report job', { startTime: startTime.toISOString() });
@@ -97,7 +107,8 @@ export async function runWeeklyReport(
         const result = await ReportDeliveryService.deliverReport(
           user,
           slackClient,
-          linearClient
+          linearClient,
+          options
         );
 
         results.push(result);

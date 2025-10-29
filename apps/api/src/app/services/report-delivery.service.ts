@@ -35,12 +35,17 @@ export interface DeliveryResult {
  * @param user - Database user record
  * @param slackClient - Initialized Slack client
  * @param linearClient - Initialized Linear client
+ * @param options - Optional configuration (encryptionKey, sharedGitHubToken)
  * @returns Promise<DeliveryResult>
  */
 export async function deliverReport(
   user: User,
   slackClient: SlackClient,
-  linearClient: LinearClient
+  linearClient: LinearClient,
+  options?: {
+    encryptionKey?: string;
+    sharedGitHubToken?: string;
+  }
 ): Promise<DeliveryResult> {
   logger.info(`Delivering report to user ${user.id} (${user.email})`);
 
@@ -72,7 +77,8 @@ export async function deliverReport(
       // Cache miss - generate new report
       reportResult = await ReportGenerationService.generateReportForUser(
         user,
-        linearClient
+        linearClient,
+        options
       );
       // Note: We don't cache here since we're about to send it.
       // The preview endpoint caches, and after sending we want fresh data next time.

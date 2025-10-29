@@ -16,6 +16,7 @@ import {
   jobsRouter,
   userRouter,
   authRouter,
+  syncRouter,
 } from './app/routes/index';
 import {
   initializeDatabase,
@@ -151,6 +152,7 @@ async function initializeApp(): Promise<void> {
   app.use('/api', adminRouter);
   app.use('/api', jobsRouter);
   app.use('/api', userRouter);
+  app.use('/api/sync-status', syncRouter); // Sync status endpoints
   app.use('/auth', authRouter); // Auth routes (OAuth)
   app.use('/slack', slackRouter);
 
@@ -197,6 +199,8 @@ async function startServer(): Promise<void> {
       const slackBotToken = await getConfigValue('SLACK_BOT_TOKEN');
       const linearApiKey = await getConfigValue('LINEAR_API_KEY');
       const reportSchedule = await getConfigValue('REPORT_SCHEDULE');
+      const githubToken = await getConfigValue('GITHUB_TOKEN');
+      const encryptionKey = await getConfigValue('ENCRYPTION_KEY');
 
       // Only initialize jobs if credentials are available
       if (!slackBotToken) {
@@ -227,7 +231,11 @@ async function startServer(): Promise<void> {
         weeklyReportJob = initWeeklyReportJob(
           slackClient,
           linearClient,
-          reportSchedule || environment.REPORT_SCHEDULE
+          reportSchedule || environment.REPORT_SCHEDULE,
+          {
+            encryptionKey: encryptionKey || undefined,
+            sharedGitHubToken: githubToken || undefined,
+          }
         );
 
         // Initialize user sync job (daily at 2AM) with Linear client for user matching

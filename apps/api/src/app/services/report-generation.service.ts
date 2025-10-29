@@ -7,11 +7,16 @@
  */
 
 import { LinearClient, type LinearIssue } from '@slack-linear-rundown/linear';
+import { GitHubClient } from '@slack-linear-rundown/github';
 import type { User } from '@slack-linear-rundown/database';
 import type { UserReport, Issue, CooldownStatus } from '@slack-linear-rundown/slack';
 import { formatWeeklyReport } from '@slack-linear-rundown/slack';
 import * as CooldownService from './cooldown.service.js';
 import * as IssueSyncService from './issue-sync.service.js';
+import * as GitHubSyncService from './github-sync.service.js';
+import * as CorrelationService from './linear-github-correlation.service.js';
+import * as SyncStatusService from './sync-status.service.js';
+import * as GitHubTokenService from './github-token.service.js';
 import { logger } from '../utils/logger.js';
 
 /**
@@ -31,17 +36,35 @@ export interface ReportResult {
  *
  * @param user - Database user record
  * @param linearClient - Initialized Linear client
+ * @param options - Optional configuration (encryptionKey, sharedGitHubToken)
  * @returns Promise<ReportResult> - Formatted report and metadata
  */
 export async function generateReportForUser(
   user: User,
-  linearClient: LinearClient
+  linearClient: LinearClient,
+  options?: {
+    encryptionKey?: string;
+    sharedGitHubToken?: string;
+  }
 ): Promise<ReportResult> {
   logger.info(`Generating report for user ${user.id} (${user.email})`);
 
   try {
     if (!user.linear_user_id) {
       throw new Error(`User ${user.email} does not have a Linear user ID mapped`);
+    }
+
+    // Get GitHub token for user (user-specific or fallback to shared)
+    let githubClient: GitHubClient | undefined;
+    const githubToken = await GitHubTokenService.getGitHubTokenWithFallback(
+      user,
+      options?.encryptionKey,
+      options?.sharedGitHubToken
+    );
+
+    if (githubToken) {
+      githubClient = new GitHubClient({ token: githubToken });
+      logger.info(`GitHub client initialized for user ${user.id}`);
     }
 
     // Calculate date range (last 7 days for categorization, last month for API query)
@@ -77,20 +100,123 @@ export async function generateReportForUser(
     // Categorize issues by recent activity
     const categorizedIssues = categorizeIssues(filteredIssues, sevenDaysAgo);
 
-    // Sync issues to database for user app
+    // Sync Linear issues to database for user app
     try {
-      await IssueSyncService.syncIssuesToDatabase(categorizedIssues, {
-        userId: user.id!,
-        reportPeriodStart: sevenDaysAgo.toISOString().split('T')[0],
-        reportPeriodEnd: now.toISOString().split('T')[0],
-        snapshotDate: now,
-      });
-      logger.info(`Synced issues to database for user ${user.id}`);
+      await SyncStatusService.withSyncTracking(
+        'linear_issues',
+        async () => {
+          await IssueSyncService.syncIssuesToDatabase(categorizedIssues, {
+            userId: user.id!,
+            reportPeriodStart: sevenDaysAgo.toISOString().split('T')[0],
+            reportPeriodEnd: now.toISOString().split('T')[0],
+            snapshotDate: now,
+          });
+          logger.info(`Synced Linear issues to database for user ${user.id}`);
+          return { issuesCount: issues.length };
+        },
+        (result) => ({ itemsProcessed: result.issuesCount })
+      );
     } catch (syncError) {
       // Log the error but don't fail the report generation
-      logger.error(`Failed to sync issues to database for user ${user.id}`, {
+      logger.error(`Failed to sync Linear issues to database for user ${user.id}`, {
         error: syncError instanceof Error ? syncError.message : 'Unknown error',
       });
+    }
+
+    // Sync GitHub data to database (if GitHub client is available)
+    if (githubClient && user.github_username) {
+      try {
+        await SyncStatusService.withSyncTracking(
+          'github_data',
+          async () => {
+            logger.info(`Fetching GitHub data for user ${user.github_username}`);
+
+            // Fetch GitHub activity
+            const githubActivity = await githubClient.getUserActivity(
+              user.github_username,
+              sevenDaysAgo,
+              now
+            );
+
+            // Categorize GitHub data
+            const categorizedGitHub: GitHubSyncService.CategorizedGitHubData = {
+              completedPRs: githubActivity.pullRequests.merged,
+              activePRs: githubActivity.pullRequests.active,
+              completedIssues: githubActivity.issues.closed,
+              activeIssues: githubActivity.issues.active,
+              reviews: githubActivity.reviews,
+              repositories: githubActivity.repositories,
+            };
+
+            logger.info(`GitHub activity for user ${user.github_username}`, {
+              completedPRs: categorizedGitHub.completedPRs.length,
+              activePRs: categorizedGitHub.activePRs.length,
+              completedIssues: categorizedGitHub.completedIssues.length,
+              activeIssues: categorizedGitHub.activeIssues.length,
+              reviews: categorizedGitHub.reviews.length,
+            });
+
+            // Sync GitHub data to database
+            await GitHubSyncService.syncGitHubDataToDatabase(categorizedGitHub, {
+              userId: user.id!,
+              reportPeriodStart: sevenDaysAgo.toISOString().split('T')[0],
+              reportPeriodEnd: now.toISOString().split('T')[0],
+              snapshotDate: now,
+            });
+
+            // Run correlation to link GitHub PRs/issues with Linear issues
+            const prsWithIds = categorizedGitHub.completedPRs
+              .concat(categorizedGitHub.activePRs)
+              .map((pr) => ({
+                githubPR: pr,
+                dbId: 0, // Will be looked up by correlation service
+              }));
+
+            const issuesWithIds = categorizedGitHub.completedIssues
+              .concat(categorizedGitHub.activeIssues)
+              .map((issue) => ({
+                githubIssue: issue,
+                dbId: 0, // Will be looked up by correlation service
+              }));
+
+            // Note: Correlation will look up the database IDs internally
+            const correlationResult = await CorrelationService.correlateBatch({
+              prs: prsWithIds,
+              issues: issuesWithIds,
+            });
+
+            logger.info(`Correlated GitHub work with Linear issues for user ${user.id}`, {
+              totalMatches: correlationResult.totalMatches,
+              createdLinks: correlationResult.createdLinks,
+            });
+
+            return {
+              prsCount: categorizedGitHub.completedPRs.length + categorizedGitHub.activePRs.length,
+              issuesCount:
+                categorizedGitHub.completedIssues.length + categorizedGitHub.activeIssues.length,
+              reviewsCount: categorizedGitHub.reviews.length,
+              correlatedLinks: correlationResult.createdLinks,
+            };
+          },
+          (result) => ({
+            itemsProcessed:
+              result.prsCount + result.issuesCount + result.reviewsCount,
+            correlatedLinks: result.correlatedLinks,
+          })
+        );
+      } catch (githubError) {
+        // Log the error but don't fail the report generation
+        logger.error(`Failed to sync GitHub data for user ${user.id}`, {
+          error: githubError instanceof Error ? githubError.message : 'Unknown error',
+          githubUsername: user.github_username,
+        });
+      }
+    } else {
+      if (!githubClient) {
+        logger.info(`GitHub client not available, skipping GitHub sync for user ${user.id}`);
+      } else if (!user.github_username) {
+        logger.info(`User ${user.id} does not have a GitHub username mapped, skipping GitHub sync`);
+      }
     }
 
     // Format the report

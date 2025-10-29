@@ -220,6 +220,10 @@ reportRouter.post('/preview-report', async (req: Request, res: Response): Promis
 
     logger.info('Generating report preview', { userId });
 
+    // Get GitHub token and encryption key
+    const githubToken = await getConfigValue('GITHUB_TOKEN');
+    const encryptionKey = await getConfigValue('ENCRYPTION_KEY');
+
     // Check cache first
     let reportResult = ReportCacheService.getCachedReport(userId);
 
@@ -228,7 +232,11 @@ reportRouter.post('/preview-report', async (req: Request, res: Response): Promis
       const linearClient = new LinearClient({ apiKey: linearApiKey });
       reportResult = await ReportGenerationService.generateReportForUser(
         user,
-        linearClient
+        linearClient,
+        {
+          encryptionKey: encryptionKey || undefined,
+          sharedGitHubToken: githubToken || undefined,
+        }
       );
 
       // Store in cache for future requests
