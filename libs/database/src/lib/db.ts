@@ -13,6 +13,13 @@ import { AppConfig } from './models/AppConfig.model.js';
 import { EncryptedConfig } from './models/EncryptedConfig.model.js';
 import { Issue } from './models/Issue.model.js';
 import { UserIssueSnapshot } from './models/UserIssueSnapshot.model.js';
+import { Repository } from './models/Repository.model.js';
+import { GitHubPullRequest } from './models/GitHubPullRequest.model.js';
+import { GitHubIssue } from './models/GitHubIssue.model.js';
+import { GitHubCodeReview } from './models/GitHubCodeReview.model.js';
+import { UserGitHubSnapshot } from './models/UserGitHubSnapshot.model.js';
+import { IssueGitHubLink } from './models/IssueGitHubLink.model.js';
+import { SyncStatus } from './models/SyncStatus.model.js';
 
 let sequelizeInstance: Sequelize | null = null;
 
@@ -31,7 +38,22 @@ export function initializeDatabase(databasePath: string = ':memory:'): Sequelize
     sequelizeInstance = new Sequelize({
       dialect: 'sqlite',
       storage: databasePath,
-      models: [User, CooldownSchedule, ReportDeliveryLog, AppConfig, EncryptedConfig, Issue, UserIssueSnapshot],
+      models: [
+        User,
+        CooldownSchedule,
+        ReportDeliveryLog,
+        AppConfig,
+        EncryptedConfig,
+        Issue,
+        UserIssueSnapshot,
+        Repository,
+        GitHubPullRequest,
+        GitHubIssue,
+        GitHubCodeReview,
+        UserGitHubSnapshot,
+        IssueGitHubLink,
+        SyncStatus,
+      ],
       logging: false, // Set to console.log to see SQL queries
       define: {
         timestamps: true,
@@ -170,4 +192,53 @@ export function getIssueModel() {
  */
 export function getUserIssueSnapshotModel() {
   return UserIssueSnapshot;
+}
+
+/**
+ * Get the Repository model for direct queries.
+ */
+export function getRepositoryModel() {
+  return Repository;
+}
+
+/**
+ * Get the GitHubPullRequest model for direct queries.
+ */
+export function getGitHubPullRequestModel() {
+  return GitHubPullRequest;
+}
+
+/**
+ * Get the GitHubIssue model for direct queries.
+ */
+export function getGitHubIssueModel() {
+  return GitHubIssue;
+}
+
+/**
+ * Get the GitHubCodeReview model for direct queries.
+ */
+export function getGitHubCodeReviewModel() {
+  return GitHubCodeReview;
+}
+
+/**
+ * Get the UserGitHubSnapshot model for direct queries.
+ */
+export function getUserGitHubSnapshotModel() {
+  return UserGitHubSnapshot;
+}
+
+/**
+ * Get the IssueGitHubLink model for direct queries.
+ */
+export function getIssueGitHubLinkModel() {
+  return IssueGitHubLink;
+}
+
+/**
+ * Get the SyncStatus model for direct queries.
+ */
+export function getSyncStatusModel() {
+  return SyncStatus;
 }
