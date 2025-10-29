@@ -1,0 +1,32 @@
+.timestamp {
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.errorCode {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.5rem;
+  background: #fee2e2;
+  border-radius: 0.25rem;
+  color: #991b1b;
+}
+
+.noError {
+  color: #9ca3af;
+}
+
+.viewButton {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.viewButton:hover {
+  background: #1d4ed8;
+}

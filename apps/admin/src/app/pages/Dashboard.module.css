@@ -73,6 +73,8 @@
   color: #6b7280;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .tab:hover {

@@ -3,6 +3,18 @@
   "include": [],
   "references": [
     {
+      "path": "../../libs/icons"
+    },
+    {
+      "path": "../../libs/utils"
+    },
+    {
+      "path": "../../libs/ui-components"
+    },
+    {
+      "path": "../../libs/shared-types"
+    },
+    {
       "path": "../../libs/auth-client"
     },
     {

@@ -3,18 +3,15 @@
  * Main admin interface with tabs for different features
  */
 
-import { useState } from 'react';
+import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { useAuth } from '@slack-linear-rundown/auth-client';
-import ConfigurationTab from '../components/ConfigurationTab';
-import UsersTab from '../components/UsersTab';
-import MessagesTab from '../components/MessagesTab';
-import JobsTab from '../components/JobsTab';
+import Configuration from './configuration/Configuration';
+import Users from './users/Users';
+import Messages from './messages/Messages';
+import Jobs from './jobs/Jobs';
 import styles from './Dashboard.module.css';
 
-type Tab = 'config' | 'users' | 'messages' | 'jobs';
-
 export function Dashboard() {
-  const [activeTab, setActiveTab] = useState<Tab>('config');
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -40,45 +37,48 @@ export function Dashboard() {
       </header>
 
       <nav className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${
-            activeTab === 'config' ? styles.active : ''
-          }`}
-          onClick={() => setActiveTab('config')}
+        <NavLink
+          to="/config"
+          className={({ isActive }) =>
+            `${styles.tab} ${isActive ? styles.active : ''}`
+          }
         >
           Configuration
-        </button>
-        <button
-          className={`${styles.tab} ${
-            activeTab === 'users' ? styles.active : ''
-          }`}
-          onClick={() => setActiveTab('users')}
+        </NavLink>
+        <NavLink
+          to="/users"
+          className={({ isActive }) =>
+            `${styles.tab} ${isActive ? styles.active : ''}`
+          }
         >
           Users
-        </button>
-        <button
-          className={`${styles.tab} ${
-            activeTab === 'jobs' ? styles.active : ''
-          }`}
-          onClick={() => setActiveTab('jobs')}
+        </NavLink>
+        <NavLink
+          to="/jobs"
+          className={({ isActive }) =>
+            `${styles.tab} ${isActive ? styles.active : ''}`
+          }
         >
           Jobs
-        </button>
-        <button
-          className={`${styles.tab} ${
-            activeTab === 'messages' ? styles.active : ''
-          }`}
-          onClick={() => setActiveTab('messages')}
+        </NavLink>
+        <NavLink
+          to="/messages"
+          className={({ isActive }) =>
+            `${styles.tab} ${isActive ? styles.active : ''}`
+          }
         >
           Message History
-        </button>
+        </NavLink>
       </nav>
 
       <main className={styles.content}>
-        {activeTab === 'config' && <ConfigurationTab />}
-        {activeTab === 'users' && <UsersTab />}
-        {activeTab === 'jobs' && <JobsTab />}
-        {activeTab === 'messages' && <MessagesTab />}
+        <Routes>
+          <Route path="/" element={<Navigate to="/config" replace />} />
+          <Route path="/config" element={<Configuration />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/messages" element={<Messages />} />
+        </Routes>
       </main>
     </div>
   );
