@@ -12,5 +12,8 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     }
+  },
+  "dependencies": {
+    "@slack-linear-rundown/icons": "workspace:*"
   }
 }

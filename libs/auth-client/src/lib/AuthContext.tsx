@@ -3,7 +3,13 @@
  * Provides authentication state and methods to React components
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 
 export interface User {
   userId: number;
@@ -73,7 +79,9 @@ export function AuthProvider({ children, apiBaseUrl = '' }: AuthProviderProps) {
 
   const login = (redirectTo?: string) => {
     const currentPath = redirectTo || window.location.pathname;
-    window.location.href = `${apiBaseUrl}/auth/slack?redirect=${encodeURIComponent(currentPath)}`;
+    window.location.href = `${apiBaseUrl}/auth/slack?redirect=${encodeURIComponent(
+      currentPath
+    )}`;
   };
 
   const logout = async () => {
